@@ -1,7 +1,8 @@
-package com.zachtib.myallowance
+package com.zachtib.myallowance.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.zachtib.myallowance.R
 
 class MainActivity : AppCompatActivity() {
 

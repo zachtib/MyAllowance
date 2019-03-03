@@ -3,11 +3,15 @@ package com.zachtib.myallowance.ui.setup
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.zachtib.android.mutableLiveDataOf
+import com.zachtib.myallowance.AllowancePreferences
+import com.zachtib.myallowance.Either
 import com.zachtib.myallowance.models.Budget
-import com.zachtib.myallowance.models.Budgets
+import com.zachtib.myallowance.models.Category
+import com.zachtib.myallowance.models.CategoryGroup
 import com.zachtib.myallowance.service.YnabService
+import com.zachtib.myallowance.unfurl
 
-class SetupViewModel(private val service: YnabService) : ViewModel() {
+class SetupViewModel(private val service: YnabService, private val preferences: AllowancePreferences) : ViewModel() {
 
     private val state = mutableLiveDataOf(SetupViewState())
 
@@ -20,6 +24,10 @@ class SetupViewModel(private val service: YnabService) : ViewModel() {
                 authorizedButtonEnabled = value.isNotBlank()
             ) }
         }
+
+    private var budgets: List<Budget> = listOf()
+    private var categories: List<Either<CategoryGroup, Category>> = listOf()
+    private var selectedCategory: Category? = null
 
     private fun updateState(transformation: SetupViewState.() -> SetupViewState) {
         state.value?.let { currentState ->
@@ -34,13 +42,51 @@ class SetupViewModel(private val service: YnabService) : ViewModel() {
         updateState { copy(
             budgets = budgets
         ) }
+        this.budgets = budgets
     }
 
     fun onBudgetSelectionCleared() {
-
+        updateState { copy(
+            categories = listOf()
+        ) }
     }
 
-    fun onBudgetItemSelected(position: Int) {
+    suspend fun onBudgetItemSelected(position: Int) {
+        val selectedBudget = budgets[position]
+        val categories = service.getCategories(selectedBudget).unfurl { categories }
+        updateState { copy(
+            categories = categories
+        ) }
+        this.categories = categories
+    }
 
+    fun onCategorySelectionCleared() {
+        // Pass
+    }
+
+    fun onCategorySelected(position: Int) {
+        val selectedItem = categories[position]
+        if (selectedItem is Either.Right) {
+            selectedCategory = selectedItem.value
+            updateState { copy(
+                saveButtonEnabled = true
+            ) }
+        }
+    }
+
+    fun onSaveButtonPressed() {
+        selectedCategory?.let {chosenCategory ->
+            preferences.developerToken = developerToken
+            preferences.chosenCategory = chosenCategory.id
+            preferences.isConfigured = true
+
+            updateState { copy(
+                finished = true
+            ) }
+            return
+        }
+        updateState { copy(
+            saveButtonEnabled = false
+        ) }
     }
 }

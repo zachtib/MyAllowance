@@ -1,13 +1,19 @@
 package com.zachtib.myallowance.service
 
 import com.zachtib.myallowance.AllowancePreferences
+import com.zachtib.myallowance.Cache
 import com.zachtib.myallowance.api.YnabApi
 import com.zachtib.myallowance.models.Budget
-import com.zachtib.myallowance.models.Budgets
+import com.zachtib.myallowance.models.CategoryGroup
 import kotlinx.coroutines.delay
+import timber.log.Timber
 
 
 class YnabService(private val api: YnabApi, private val preferences: AllowancePreferences) {
+
+    private val budgetsCache = Cache<List<Budget>>()
+    private val categoriesCache = Cache<List<CategoryGroup>>()
+
     fun isAuthenticated() = !preferences.developerToken.isBlank()
 
     suspend fun authenticate(developerToken: String): Boolean {
@@ -25,8 +31,27 @@ class YnabService(private val api: YnabApi, private val preferences: AllowancePr
         return if (!isAuthenticated()) {
             listOf()
         } else {
-            val serverResponse = api.getBudgets(getAuthorization())
-            serverResponse.data.budgets
+            budgetsCache.getValue {
+                val serverResponse = api.getBudgets(getAuthorization())
+                if (serverResponse.error != null) {
+                    Timber.e(serverResponse.error.detail)
+                }
+                serverResponse.data?.budgets ?: listOf()
+            }
+        }
+    }
+
+    suspend fun getCategories(budget: Budget): List<CategoryGroup> {
+        return if (!isAuthenticated()) {
+            listOf()
+        } else {
+            categoriesCache.getValue {
+                val response = api.getCategories(getAuthorization(), budget.id)
+                if (response.error != null) {
+                    Timber.e(response.error.detail)
+                }
+                response.data?.categoryGroups ?: listOf()
+            }
         }
     }
 }

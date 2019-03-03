@@ -6,4 +6,5 @@ import com.zachtib.android.preferences.TypedPreferences
 class AllowancePreferences(prefs: SharedPreferences) : TypedPreferences(prefs) {
     var isConfigured by preference(false)
     var developerToken by preference("")
+    var chosenCategory by preference("")
 }

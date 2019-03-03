@@ -7,7 +7,11 @@ import android.widget.ArrayAdapter
 import com.zachtib.android.BaseFragment
 import com.zachtib.android.onTextChanged
 import com.zachtib.android.textValue
+import com.zachtib.myallowance.Either
 import com.zachtib.myallowance.R
+import com.zachtib.myallowance.models.Category
+import com.zachtib.myallowance.models.CategoryGroup
+import com.zachtib.myallowance.unfurl
 import kotlinx.android.synthetic.main.fragment_setup.*
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -30,6 +34,20 @@ class SetupFragment : BaseFragment(R.layout.fragment_setup) {
                 budgetSpinner.adapter = adapter
 
             }
+            if (it.categories.isNotEmpty()) {
+                Timber.d("Got ${it.categories.size} category groups")
+                val adapter = ArrayAdapter(requireContext(),
+                    android.R.layout.simple_spinner_dropdown_item,
+                    it.categories.map { item: Either<CategoryGroup, Category> ->
+                        when (item) {
+                            is Either.Left -> item.value.name
+                            is Either.Right -> item.value.name
+                        }
+                    }
+                )
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                categorySpinner.adapter = adapter
+            }
         }
 
         developerTokenField.onTextChanged { viewModel.developerToken = it }
@@ -46,9 +64,22 @@ class SetupFragment : BaseFragment(R.layout.fragment_setup) {
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                viewModel.onBudgetItemSelected(position)
+                launch {
+                    viewModel.onBudgetItemSelected(position)
+                }
+            }
+        }
+
+        categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                viewModel.onBudgetSelectionCleared()
             }
 
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                launch {
+                    viewModel.onBudgetItemSelected(position)
+                }
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">My Allowance</string>
+    <string name="preferences">com.zachtib.myallowance.PREFERENCES</string>
     <string name="ynab_developer_url">https://app.youneedabudget.com/settings/developer</string>
 </resources>

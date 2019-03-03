@@ -9,5 +9,14 @@
         android:id="@+id/mainFragment"
         android:name="com.zachtib.myallowance.ui.main.MainFragment"
         android:label="MainFragment"
-        tools:layout="@layout/fragment_main"/>
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_setupFragment"
+            app:destination="@id/setupFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/setupFragment"
+        android:name="com.zachtib.myallowance.ui.setup.SetupFragment"
+        android:label="SetupFragment"
+        tools:layout="@layout/fragment_setup"/>
 </navigation>

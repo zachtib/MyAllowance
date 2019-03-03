@@ -2,4 +2,8 @@
     <string name="app_name">My Allowance</string>
     <string name="preferences">com.zachtib.myallowance.PREFERENCES</string>
     <string name="ynab_developer_url">https://app.youneedabudget.com/settings/developer</string>
+    <string name="connect_to_ynab">Connect to YNAB:</string>
+    <string name="choose_a_budget">Choose a budget</string>
+    <string name="save">Save</string>
+    <string name="enter_your_developer_token">Enter your developer token</string>
 </resources>

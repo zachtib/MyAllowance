@@ -22,6 +22,10 @@ android {
     }
 }
 
+repositories {
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
 dependencies {
     final appcompat_version = '1.0.2'
     final corektx_version = '1.0.1'
@@ -33,7 +37,7 @@ dependencies {
     final material_version = '1.0.0'
     final nav_version = '1.0.0-rc02'
     final recyclerview_version = '1.0.0'
-    final retrofit_version = '2.5.0'
+    final retrofit_version = '2.5.1-SNAPSHOT'
     final timber_version = '4.7.1'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

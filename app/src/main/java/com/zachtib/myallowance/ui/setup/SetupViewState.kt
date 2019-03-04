@@ -9,6 +9,8 @@ data class SetupViewState(
     val authorizedButtonEnabled: Boolean = false,
     val saveButtonEnabled: Boolean = false,
     val budgets: List<Budget> = listOf(),
+    val selectedBudgetIndex: Int = -1,
     val categories: List<Either<CategoryGroup, Category>> = listOf(),
+    val selectedCategoryIndex: Int = -1,
     val finished: Boolean = false
 )

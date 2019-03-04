@@ -47,6 +47,8 @@ class SetupViewModel(private val service: YnabService, private val preferences: 
 
     fun onBudgetSelectionCleared() {
         updateState { copy(
+            selectedBudgetIndex = -1,
+            selectedCategoryIndex = -1,
             categories = listOf()
         ) }
     }
@@ -55,13 +57,16 @@ class SetupViewModel(private val service: YnabService, private val preferences: 
         val selectedBudget = budgets[position]
         val categories = service.getCategories(selectedBudget).unfurl { categories }
         updateState { copy(
+            selectedBudgetIndex = position,
             categories = categories
         ) }
         this.categories = categories
     }
 
     fun onCategorySelectionCleared() {
-        // Pass
+        updateState { copy(
+            selectedCategoryIndex = -1
+        ) }
     }
 
     fun onCategorySelected(position: Int) {
@@ -69,9 +74,11 @@ class SetupViewModel(private val service: YnabService, private val preferences: 
         if (selectedItem is Either.Right) {
             selectedCategory = selectedItem.value
             updateState { copy(
+                selectedCategoryIndex = position,
                 saveButtonEnabled = true
             ) }
         }
+        updateState { copy(selectedCategoryIndex = position) }
     }
 
     fun onSaveButtonPressed() {

@@ -13,6 +13,7 @@ class YnabService(private val api: YnabApi, private val preferences: AllowancePr
 
     private val budgetsCache = Cache<List<Budget>>()
     private val categoriesCache = Cache<List<CategoryGroup>>()
+    private var cachedBudget: Budget? = null
 
     fun isAuthenticated() = !preferences.developerToken.isBlank()
 
@@ -45,12 +46,21 @@ class YnabService(private val api: YnabApi, private val preferences: AllowancePr
         return if (!isAuthenticated()) {
             listOf()
         } else {
-            categoriesCache.getValue {
-                val response = api.getCategories(getAuthorization(), budget.id)
-                if (response.error != null) {
-                    Timber.e(response.error.detail)
+            if (cachedBudget != budget) {
+                categoriesCache.expire()
+                cachedBudget = budget
+            }
+            try {
+                categoriesCache.getValue {
+                    val response = api.getCategories(getAuthorization(), budget.id)
+                    if (response.error != null) {
+                        Timber.e(response.error.detail)
+                    }
+                    response.data?.category_groups ?: listOf()
                 }
-                response.data?.categoryGroups ?: listOf()
+            } catch (e: retrofit2.HttpException) {
+                Timber.e(e, "Error during getCategories()")
+                listOf<CategoryGroup>()
             }
         }
     }

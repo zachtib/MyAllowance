@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.navigation.fragment.findNavController
 import com.zachtib.android.BaseFragment
 import com.zachtib.android.onTextChanged
 import com.zachtib.android.textValue
@@ -23,30 +24,67 @@ class SetupFragment : BaseFragment(R.layout.fragment_setup) {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel.getState().observeWith {
-            authorizeButton.isEnabled = it.authorizedButtonEnabled
-            if (it.budgets.isNotEmpty()) {
-                Timber.d("Got ${it.budgets.size} budgets")
-                val adapter = ArrayAdapter(requireContext(),
-                    android.R.layout.simple_spinner_dropdown_item,
-                    it.budgets.map { budget -> budget.name })
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                budgetSpinner.adapter = adapter
+        viewModel.getState().observeWith { state: SetupViewState ->
+            if (state.finished) {
+                findNavController().popBackStack()
+            } else {
+                authorizeButton.isEnabled = state.authorizedButtonEnabled
+                saveButton.isEnabled = state.saveButtonEnabled
 
-            }
-            if (it.categories.isNotEmpty()) {
-                Timber.d("Got ${it.categories.size} category groups")
-                val adapter = ArrayAdapter(requireContext(),
-                    android.R.layout.simple_spinner_dropdown_item,
-                    it.categories.map { item: Either<CategoryGroup, Category> ->
-                        when (item) {
-                            is Either.Left -> item.value.name
-                            is Either.Right -> item.value.name
+                budgetSpinner.onItemSelectedListener = null
+                categorySpinner.onItemSelectedListener = null
+
+                if (state.budgets.isNotEmpty()) {
+                    Timber.d("Got ${state.budgets.size} budgets")
+                    val adapter = ArrayAdapter(requireContext(),
+                        android.R.layout.simple_spinner_dropdown_item,
+                        state.budgets.map { budget -> budget.name })
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    budgetSpinner.adapter = adapter
+                    budgetSpinner.setSelection(state.selectedBudgetIndex)
+                    budgetSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                        override fun onNothingSelected(parent: AdapterView<*>?) {
+                            if (state.selectedBudgetIndex != -1) {
+                                viewModel.onBudgetSelectionCleared()
+                            }
+                        }
+
+                        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                            if (state.selectedBudgetIndex != position) {
+                                launch {
+                                    viewModel.onBudgetItemSelected(position)
+                                }
+                            }
                         }
                     }
-                )
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                categorySpinner.adapter = adapter
+                }
+                if (state.categories.isNotEmpty()) {
+                    Timber.d("Got ${state.categories.size} category groups")
+                    val adapter = ArrayAdapter(requireContext(),
+                        android.R.layout.simple_spinner_dropdown_item,
+                        state.categories.map { item: Either<CategoryGroup, Category> ->
+                            when (item) {
+                                is Either.Left -> item.value.name
+                                is Either.Right -> item.value.name
+                            }
+                        }
+                    )
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    categorySpinner.adapter = adapter
+                    categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                        override fun onNothingSelected(parent: AdapterView<*>?) {
+                            if (state.selectedCategoryIndex != -1) {
+                                viewModel.onBudgetSelectionCleared()
+                            }
+                        }
+
+                        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                            launch {
+                                viewModel.onBudgetItemSelected(position)
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -55,30 +93,6 @@ class SetupFragment : BaseFragment(R.layout.fragment_setup) {
         authorizeButton.setOnClickListener {
             launch {
                 viewModel.onAuthorizedClicked()
-            }
-        }
-
-        budgetSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                viewModel.onBudgetSelectionCleared()
-            }
-
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                launch {
-                    viewModel.onBudgetItemSelected(position)
-                }
-            }
-        }
-
-        categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                viewModel.onBudgetSelectionCleared()
-            }
-
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                launch {
-                    viewModel.onBudgetItemSelected(position)
-                }
             }
         }
     }

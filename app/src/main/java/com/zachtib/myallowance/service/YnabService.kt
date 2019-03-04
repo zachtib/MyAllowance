@@ -4,6 +4,7 @@ import com.zachtib.myallowance.AllowancePreferences
 import com.zachtib.myallowance.Cache
 import com.zachtib.myallowance.api.YnabApi
 import com.zachtib.myallowance.models.Budget
+import com.zachtib.myallowance.models.Category
 import com.zachtib.myallowance.models.CategoryGroup
 import kotlinx.coroutines.delay
 import timber.log.Timber
@@ -62,6 +63,14 @@ class YnabService(private val api: YnabApi, private val preferences: AllowancePr
                 Timber.e(e, "Error during getCategories()")
                 listOf<CategoryGroup>()
             }
+        }
+    }
+
+    suspend fun getCategoryDetail(budgetId: String, categoryId: String): Category? {
+        return if (!isAuthenticated()) {
+            null
+        } else {
+            api.getCategory(getAuthorization(), budgetId, categoryId).data?.category
         }
     }
 }

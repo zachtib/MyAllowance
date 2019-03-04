@@ -14,6 +14,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
 
         if (viewModel.shouldRedirectToSetup()) {
             findNavController().navigate(R.id.action_mainFragment_to_setupFragment)
+            return
         }
     }
 }

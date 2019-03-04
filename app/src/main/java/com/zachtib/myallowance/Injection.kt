@@ -6,6 +6,7 @@ import com.zachtib.myallowance.api.YnabApi
 import com.zachtib.myallowance.service.YnabService
 import com.zachtib.myallowance.ui.main.MainViewModel
 import com.zachtib.myallowance.ui.setup.SetupViewModel
+import okhttp3.Cache
 import okhttp3.OkHttpClient
 import org.koin.androidx.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
@@ -24,8 +25,10 @@ val appModule = module {
     }
 
     single<OkHttpClient> {
+        val context: Context = get()
         OkHttpClient.Builder()
             .addInterceptor(HttpLogger())
+            .cache(Cache(context.cacheDir, (10L * 1024L * 1024L)))
             .build()
     }
 

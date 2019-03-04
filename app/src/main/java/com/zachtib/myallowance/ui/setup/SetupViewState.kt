@@ -1,6 +1,6 @@
 package com.zachtib.myallowance.ui.setup
 
-import com.zachtib.myallowance.Either
+import com.zachtib.functional.types.Either
 import com.zachtib.myallowance.models.Budget
 import com.zachtib.myallowance.models.Category
 import com.zachtib.myallowance.models.CategoryGroup

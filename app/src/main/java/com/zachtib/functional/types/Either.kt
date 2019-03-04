@@ -1,4 +1,4 @@
-package com.zachtib.myallowance
+package com.zachtib.functional.types
 
 sealed class Either<out A, out B> {
     data class Left<A>(val value: A) : Either<A, Nothing>()

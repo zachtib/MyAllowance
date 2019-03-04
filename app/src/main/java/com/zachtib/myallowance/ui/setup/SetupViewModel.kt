@@ -4,12 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.zachtib.android.mutableLiveDataOf
 import com.zachtib.myallowance.AllowancePreferences
-import com.zachtib.myallowance.Either
+import com.zachtib.functional.types.Either
 import com.zachtib.myallowance.models.Budget
 import com.zachtib.myallowance.models.Category
 import com.zachtib.myallowance.models.CategoryGroup
 import com.zachtib.myallowance.service.YnabService
-import com.zachtib.myallowance.unfurl
+import com.zachtib.functional.unfurl
 import timber.log.Timber
 
 class SetupViewModel(private val service: YnabService, private val preferences: AllowancePreferences) : ViewModel() {

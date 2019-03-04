@@ -1,4 +1,6 @@
-package com.zachtib.myallowance
+package com.zachtib.functional
+
+import com.zachtib.functional.types.Either
 
 fun <A, B> List<A>.unfurl(getChildren: A.() -> List<B>): List<Either<A, B>> {
     val list = mutableListOf<Either<A, B>>()

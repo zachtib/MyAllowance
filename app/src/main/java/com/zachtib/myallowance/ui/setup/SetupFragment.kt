@@ -7,12 +7,10 @@ import android.widget.ArrayAdapter
 import androidx.navigation.fragment.findNavController
 import com.zachtib.android.BaseFragment
 import com.zachtib.android.onTextChanged
-import com.zachtib.android.textValue
-import com.zachtib.myallowance.Either
+import com.zachtib.functional.types.Either
 import com.zachtib.myallowance.R
 import com.zachtib.myallowance.models.Category
 import com.zachtib.myallowance.models.CategoryGroup
-import com.zachtib.myallowance.unfurl
 import kotlinx.android.synthetic.main.fragment_setup.*
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel

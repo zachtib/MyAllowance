@@ -41,7 +41,9 @@ class SetupFragment : BaseFragment(R.layout.fragment_setup) {
                         state.budgets.map { budget -> budget.name })
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     budgetSpinner.adapter = adapter
-                    budgetSpinner.setSelection(state.selectedBudgetIndex)
+                    if (state.selectedBudgetIndex != -1) {
+                        budgetSpinner.setSelection(state.selectedBudgetIndex)
+                    }
                     budgetSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                         override fun onNothingSelected(parent: AdapterView<*>?) {
                             if (state.selectedBudgetIndex != -1) {
@@ -71,16 +73,19 @@ class SetupFragment : BaseFragment(R.layout.fragment_setup) {
                     )
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     categorySpinner.adapter = adapter
+                    if (state.selectedCategoryIndex != -1) {
+                        categorySpinner.setSelection(state.selectedCategoryIndex)
+                    }
                     categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                         override fun onNothingSelected(parent: AdapterView<*>?) {
                             if (state.selectedCategoryIndex != -1) {
-                                viewModel.onBudgetSelectionCleared()
+                                viewModel.onCategorySelectionCleared()
                             }
                         }
 
                         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                            launch {
-                                viewModel.onBudgetItemSelected(position)
+                            if (state.selectedCategoryIndex != position) {
+                                viewModel.onCategorySelected(position)
                             }
                         }
                     }
@@ -95,5 +100,7 @@ class SetupFragment : BaseFragment(R.layout.fragment_setup) {
                 viewModel.onAuthorizedClicked()
             }
         }
+
+        saveButton.setOnClickListener { viewModel.onSaveButtonPressed() }
     }
 }

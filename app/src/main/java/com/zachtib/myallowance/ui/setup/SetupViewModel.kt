@@ -10,6 +10,7 @@ import com.zachtib.myallowance.models.Category
 import com.zachtib.myallowance.models.CategoryGroup
 import com.zachtib.myallowance.service.YnabService
 import com.zachtib.myallowance.unfurl
+import timber.log.Timber
 
 class SetupViewModel(private val service: YnabService, private val preferences: AllowancePreferences) : ViewModel() {
 
@@ -29,6 +30,7 @@ class SetupViewModel(private val service: YnabService, private val preferences: 
     private var categories: List<Either<CategoryGroup, Category>> = listOf()
     private var selectedCategory: Category? = null
 
+    @Synchronized
     private fun updateState(transformation: SetupViewState.() -> SetupViewState) {
         state.value?.let { currentState ->
             val newState = currentState.transformation()
@@ -54,6 +56,7 @@ class SetupViewModel(private val service: YnabService, private val preferences: 
     }
 
     suspend fun onBudgetItemSelected(position: Int) {
+        Timber.d("Budget $position selected")
         val selectedBudget = budgets[position]
         val categories = service.getCategories(selectedBudget).unfurl { categories }
         updateState { copy(
@@ -77,6 +80,7 @@ class SetupViewModel(private val service: YnabService, private val preferences: 
                 selectedCategoryIndex = position,
                 saveButtonEnabled = true
             ) }
+            return
         }
         updateState { copy(selectedCategoryIndex = position) }
     }

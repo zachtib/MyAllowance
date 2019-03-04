@@ -42,6 +42,6 @@ val appModule = module {
 
     single { YnabService(get(), get()) }
 
-    viewModel { MainViewModel(get()) }
+    viewModel { MainViewModel(get(), get()) }
     viewModel { SetupViewModel(get(), get()) }
 }

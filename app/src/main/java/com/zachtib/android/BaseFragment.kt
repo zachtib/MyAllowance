@@ -1,9 +1,7 @@
 package com.zachtib.android
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.fragment.app.Fragment
@@ -23,6 +21,13 @@ abstract class BaseFragment(
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return layoutId?.let { inflater.inflate(it, container, false) }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        if (menuId != null) {
+            inflater?.inflate(menuId, menu)
+        }
     }
 
     protected fun <T> LiveData<T>.observeWith(observer: (T) -> Unit) {
